@@ -2,195 +2,215 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Solution Point — Bespoke AR Photo Frames</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Solution Point — AR Experience</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
     body {
-      min-height: 100vh;
-      background-color: #08080a;
-      background-image:
-        radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.16), transparent 55%),
-        radial-gradient(circle at 85% 90%, rgba(170, 130, 32, 0.1), transparent 45%);
-      color: #f5f2eb;
+      margin: 0;
+      overflow: hidden;
       font-family: 'Montserrat', sans-serif;
+      background: #08080a;
+    }
+
+    /* Luxury Start Overlay */
+    #start-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: #08080a;
+      background-image: radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.16), transparent 60%);
+      color: #f5f2eb;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px 18px;
+      z-index: 9999;
+      padding: 24px;
     }
-    .card {
-      max-width: 430px;
+    .overlay-card {
+      max-width: 360px;
       width: 100%;
-      background: rgba(18, 18, 22, 0.85);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: rgba(18, 18, 22, 0.88);
       border: 1px solid rgba(212, 175, 55, 0.28);
       border-radius: 22px;
-      padding: 38px 28px 32px;
+      padding: 36px 26px;
       text-align: center;
-      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 236, 179, 0.12);
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
     }
     .eyebrow {
       font-size: 10px;
       letter-spacing: 0.28em;
       text-transform: uppercase;
       color: #d4af37;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
       font-weight: 500;
     }
-    h1 {
+    .overlay-card h2 {
       font-family: 'Playfair Display', serif;
-      font-size: 34px;
+      font-size: 30px;
       font-weight: 600;
-      letter-spacing: 0.02em;
+      margin: 0 0 12px 0;
       background: linear-gradient(135deg, #fff5d6 0%, #d4af37 55%, #b58922 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      margin-bottom: 12px;
     }
-    .divider {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      margin: 0 auto 18px;
-      width: 140px;
-    }
-    .divider span {
-      height: 1px;
-      flex: 1;
-      background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.6), transparent);
-    }
-    .divider i {
-      width: 5px;
-      height: 5px;
-      background: #d4af37;
-      transform: rotate(45deg);
-      display: block;
-    }
-    .subtitle {
-      font-size: 14px;
+    .overlay-card p {
+      font-size: 13.5px;
       color: #b8b2a6;
       line-height: 1.65;
       font-weight: 300;
-      margin-bottom: 28px;
+      margin: 0 0 28px 0;
     }
-    .steps {
-      text-align: left;
-      background: rgba(255, 255, 255, 0.025);
-      border: 1px solid rgba(212, 175, 55, 0.14);
-      padding: 20px 18px;
-      border-radius: 14px;
-      margin-bottom: 28px;
-    }
-    .steps-title {
-      font-size: 11px;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-      color: #d4af37;
-      margin-bottom: 14px;
-      font-weight: 600;
-    }
-    .step-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      font-size: 13.5px;
-      line-height: 1.55;
-      color: #e2ddd2;
-      font-weight: 300;
-      margin-bottom: 12px;
-    }
-    .step-item:last-child { margin-bottom: 0; }
-    .step-num {
-      flex-shrink: 0;
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      border: 1px solid rgba(212, 175, 55, 0.55);
-      color: #e6c667;
-      font-size: 11px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-top: 1px;
-    }
-    .btn-gold {
-      display: block;
+    #start-btn {
       width: 100%;
-      padding: 15px 20px;
+      padding: 15px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       background: linear-gradient(135deg, #e5c365 0%, #c59b27 100%);
       color: #0b0b0d;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
+      border: none;
       border-radius: 12px;
-      margin-bottom: 12px;
-      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.22);
-      transition: transform 0.2s ease, opacity 0.2s ease;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.25);
     }
-    .btn-gold:active { transform: scale(0.98); }
-    .btn-outline {
-      display: block;
-      width: 100%;
-      padding: 14px 20px;
-      background: transparent;
+    #start-btn:active { transform: scale(0.98); }
+
+    /* Live Camera HUD (appears after Start) */
+    #hud-brand {
+      display: none;
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(12, 12, 15, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       border: 1px solid rgba(212, 175, 55, 0.35);
       color: #e6c667;
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      border-radius: 12px;
-      transition: background 0.2s ease;
-    }
-    .btn-outline:active { background: rgba(212, 175, 55, 0.08); }
-    .footer-note {
-      margin-top: 22px;
       font-size: 11px;
-      color: #6f6a60;
-      letter-spacing: 0.08em;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    #scan-hint {
+      display: none;
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(12, 12, 15, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: #f5f2eb;
+      font-size: 12.5px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      padding: 11px 22px;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: opacity 0.35s ease;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="eyebrow">Bespoke AR Photo Frames</div>
-    <h1>Solution Point</h1>
-    <div class="divider"><span></span><i></i><span></span></div>
-    <p class="subtitle">Timeless memories, brought to life. Scan your custom photo frame to watch your cherished video play right on the print.</p>
 
-    <div class="steps">
-      <div class="steps-title">How to Experience</div>
-      <div class="step-item">
-        <div class="step-num">1</div>
-        <div>Scan the QR code placed on the back of your frame.</div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">2</div>
-        <div>Tap <strong style="color:#fff;font-weight:500;">Start Experience</strong> and allow camera access.</div>
-      </div>
-      <div class="step-item">
-        <div class="step-num">3</div>
-        <div>Hold your phone steady over the photo — your video will play automatically.</div>
-      </div>
+  <div id="start-overlay">
+    <div class="overlay-card">
+      <div class="eyebrow">AR Memory Experience</div>
+      <h2>Solution Point</h2>
+      <p>Tap below to launch your camera and point it steadily at your photo frame.</p>
+      <button id="start-btn">Start Experience</button>
     </div>
-
-    <a class="btn-gold" href="https://wa.me/916392335454?text=Hi%2C%20I%20would%20like%20to%20order%20a%20luxury%20AR%20Photo%20Frame%20from%20Solution%20Point.">
-      Order on WhatsApp
-    </a>
-    <a class="btn-outline" href="tel:+916392335454">
-      Call +91 63923 35454
-    </a>
-
-    <div class="footer-note">CRAFTED BY SOLUTION POINT</div>
   </div>
+
+  <div id="hud-brand">Solution Point</div>
+  <div id="scan-hint">Point camera at your photo frame</div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-assets>
+      <video
+        id="ar-video"
+        src="./video.mp4"
+        preload="auto"
+        loop
+        playsinline
+        webkit-playsinline
+        crossorigin="anonymous"
+      ></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+      <a-video
+        src="#ar-video"
+        width="1"
+        height="0.5625"
+        position="0 0 0"
+      ></a-video>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const startOverlay = document.getElementById('start-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const hudBrand = document.getElementById('hud-brand');
+    const scanHint = document.getElementById('scan-hint');
+    const video = document.getElementById('ar-video');
+    const target = document.getElementById('ar-target');
+    const sceneEl = document.querySelector('a-scene');
+
+    const startAR = () => {
+      const arSystem = sceneEl.systems['mindar-image-system'];
+      if (arSystem) arSystem.start();
+    };
+
+    startBtn.addEventListener('click', () => {
+      startOverlay.style.display = 'none';
+      hudBrand.style.display = 'block';
+      scanHint.style.display = 'block';
+
+      video.play().then(() => {
+        video.pause();
+        video.currentTime = 0;
+      }).catch(() => {});
+
+      if (sceneEl.hasLoaded) {
+        startAR();
+      } else {
+        sceneEl.addEventListener('loaded', startAR);
+      }
+    });
+
+    target.addEventListener('targetFound', () => {
+      scanHint.style.opacity = '0';
+      video.play();
+    });
+
+    target.addEventListener('targetLost', () => {
+      scanHint.style.opacity = '1';
+      video.pause();
+    });
+  </script>
+
 </body>
 </html>
