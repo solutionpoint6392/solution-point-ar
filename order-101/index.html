@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Solution Point — AR Experience</title>
+  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: 'Montserrat', sans-serif;
+      background: #08080a;
+    }
+
+    /* Luxury Start Overlay */
+    #start-overlay {
+      position: fixed;
+      inset: 0;
+      background-color: #08080a;
+      background-image: radial-gradient(circle at 50% 20%, rgba(212, 175, 55, 0.16), transparent 60%);
+      color: #f5f2eb;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      padding: 24px;
+    }
+    .overlay-card {
+      max-width: 360px;
+      width: 100%;
+      background: rgba(18, 18, 22, 0.88);
+      border: 1px solid rgba(212, 175, 55, 0.28);
+      border-radius: 22px;
+      padding: 36px 26px;
+      text-align: center;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8);
+    }
+    .eyebrow {
+      font-size: 10px;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: #d4af37;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .overlay-card h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 600;
+      margin: 0 0 12px 0;
+      background: linear-gradient(135deg, #fff5d6 0%, #d4af37 55%, #b58922 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .overlay-card p {
+      font-size: 13.5px;
+      color: #b8b2a6;
+      line-height: 1.65;
+      font-weight: 300;
+      margin: 0 0 28px 0;
+    }
+    #start-btn {
+      width: 100%;
+      padding: 15px 24px;
+      font-family: 'Montserrat', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      background: linear-gradient(135deg, #e5c365 0%, #c59b27 100%);
+      color: #0b0b0d;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 10px 24px rgba(212, 175, 55, 0.25);
+    }
+    #start-btn:active { transform: scale(0.98); }
+
+    /* Live Camera HUD (appears after Start) */
+    #hud-brand {
+      display: none;
+      position: fixed;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(12, 12, 15, 0.65);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: #e6c667;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      padding: 8px 18px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+    #scan-hint {
+      display: none;
+      position: fixed;
+      bottom: 32px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 50;
+      background: rgba(12, 12, 15, 0.72);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      color: #f5f2eb;
+      font-size: 12.5px;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      padding: 11px 22px;
+      border-radius: 999px;
+      white-space: nowrap;
+      transition: opacity 0.35s ease;
+    }
+  </style>
+</head>
+<body>
+
+  <div id="start-overlay">
+    <div class="overlay-card">
+      <div class="eyebrow">AR Memory Experience</div>
+      <h2>Solution Point</h2>
+      <p>Tap below to launch your camera and point it steadily at your photo frame.</p>
+      <button id="start-btn">Start Experience</button>
+    </div>
+  </div>
+
+  <div id="hud-brand">Solution Point</div>
+  <div id="scan-hint">Point camera at your photo frame</div>
+
+  <a-scene
+    mindar-image="imageTargetSrc: ./targets.mind; autoStart: false;"
+    color-space="sRGB"
+    renderer="colorManagement: true, physicallyCorrectLights"
+    vr-mode-ui="enabled: false"
+    device-orientation-permission-ui="enabled: false"
+  >
+    <a-assets>
+      <video
+        id="ar-video"
+        src="./video.mp4"
+        preload="auto"
+        loop
+        playsinline
+        webkit-playsinline
+        crossorigin="anonymous"
+      ></video>
+    </a-assets>
+
+    <a-camera position="0 0 0" look-controls="enabled: false"></a-camera>
+
+    <a-entity id="ar-target" mindar-image-target="targetIndex: 0">
+      <a-video
+        src="#ar-video"
+        width="1"
+        height="0.5625"
+        position="0 0 0"
+      ></a-video>
+    </a-entity>
+  </a-scene>
+
+  <script>
+    const startOverlay = document.getElementById('start-overlay');
+    const startBtn = document.getElementById('start-btn');
+    const hudBrand = document.getElementById('hud-brand');
+    const scanHint = document.getElementById('scan-hint');
+    const video = document.getElementById('ar-video');
+    const target = document.getElementById('ar-target');
+    const sceneEl = document.querySelector('a-scene');
+
+    const startAR = () => {
+      const arSystem = sceneEl.systems['mindar-image-system'];
+      if (arSystem) arSystem.start();
+    };
+
+    startBtn.addEventListener('click', () => {
+      startOverlay.style.display = 'none';
+      hudBrand.style.display = 'block';
+      scanHint.style.display = 'block';
+
+      video.play().then(() => {
+        video.pause();
+        video.currentTime = 0;
+      }).catch(() => {});
+
+      if (sceneEl.hasLoaded) {
+        startAR();
+      } else {
+        sceneEl.addEventListener('loaded', startAR);
+      }
+    });
+
+    target.addEventListener('targetFound', () => {
+      scanHint.style.opacity = '0';
+      video.play();
+    });
+
+    target.addEventListener('targetLost', () => {
+      scanHint.style.opacity = '1';
+      video.pause();
+    });
+  </script>
+
+</body>
+</html>
